@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
-import { store } from "./config/store";
+import store from "./config/store";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

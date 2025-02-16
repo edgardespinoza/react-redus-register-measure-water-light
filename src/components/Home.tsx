@@ -1,5 +1,6 @@
-import { AdjustmentsVerticalIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../config/store";
 
 interface LightMeasurement {
   room: string;
@@ -12,6 +13,7 @@ interface LightMeasurement {
   totalPayment: number;
   year: number;
   month: number;
+  rent: number;
 }
 
 const measurements: LightMeasurement[] = [
@@ -26,6 +28,7 @@ const measurements: LightMeasurement[] = [
     totalPayment: 27.8,
     year: 2023,
     month: 10,
+    rent: 300,
   },
   {
     room: "Cocina",
@@ -38,6 +41,7 @@ const measurements: LightMeasurement[] = [
     totalPayment: 22.5,
     year: 2023,
     month: 10,
+    rent: 300,
   },
   {
     room: "Dormitorio",
@@ -50,6 +54,7 @@ const measurements: LightMeasurement[] = [
     totalPayment: 18.0,
     year: 2023,
     month: 9,
+    rent: 300,
   },
   {
     room: "Baño",
@@ -62,14 +67,18 @@ const measurements: LightMeasurement[] = [
     totalPayment: 12.3,
     year: 2023,
     month: 9,
+    rent: 300,
   },
 ];
 
 const Home = () => {
+  const showFilters = useSelector(
+    (state: RootState) => state.filter.showFilters
+  );
+
   const [yearFilter, setYearFilter] = useState<number | "">("");
   const [monthFilter, setMonthFilter] = useState<number | "">("");
   const [roomFilter, setRoomFilter] = useState<string>("");
-  const [showFilters, setShowFilters] = useState(false);
 
   const filteredMeasurements = measurements.filter((measurement) => {
     return (
@@ -81,21 +90,9 @@ const Home = () => {
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Botón para mostrar/ocultar filtros en móvil */}
-      <button
-        onClick={() => setShowFilters(!showFilters)}
-        className="sm:hidden mt-4 mb-4 bg-gray-800 text-gray-300 p-2 rounded-lg flex items-center justify-center space-x-2 hover:bg-gray-700 transition-colors shadow-md"
-      >
-        <AdjustmentsVerticalIcon className="h-5 w-5 text-gray-300" />{" "}
-        {/* Ícono más minimalista */}
-        <span className="font-normal text-sm">
-          {showFilters ? "Ocultar Filtros" : "Filtros"}
-        </span>
-      </button>
-
-      {/* Filtros */}
+      {/* Filters */}
       <div
-        className={`${showFilters ? "block" : "hidden"} mt-4  sm:block mb-6`}
+        className={`${showFilters ? "block sm:block" : "hidden"} mt-4  mb-6`}
       >
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
@@ -200,6 +197,11 @@ const Home = () => {
                   {measurement.meterLightBefore} kWh)
                 </p>
                 <p>⚡ Pago Luz: ${measurement.paymentLight.toFixed(2)}</p>
+              </div>
+
+              {/* Campo de Alquiler */}
+              <div className="col-span-1 sm:col-span-2 space-y-2">
+                <p>🏠 Alquiler: ${measurement.rent.toFixed(2)}</p>
               </div>
 
               {/* Total en una fila completa */}

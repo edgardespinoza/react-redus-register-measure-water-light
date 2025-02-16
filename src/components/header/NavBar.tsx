@@ -1,6 +1,13 @@
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  AdjustmentsVerticalIcon,
+  Bars3Icon,
+  BellIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import { toggleFilters } from "../../config/state/filterSlice";
 import Logo from "./Logo";
 
 const navigation = [
@@ -11,6 +18,8 @@ const navigation = [
 ];
 
 export default function Navbar() {
+  const dispatch = useDispatch();
+
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
@@ -59,6 +68,13 @@ export default function Navbar() {
             </div>
           </div>
           <div className="flex items-center pr-2">
+            <button
+              type="button"
+              onClick={() => dispatch(toggleFilters())}
+              className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white"
+            >
+              <AdjustmentsVerticalIcon className="size-6" aria-hidden="true" />
+            </button>
             <button
               type="button"
               className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
