@@ -1,13 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./components/Home";
-import NavBar from "./components/header/NavBar";
-import Setting from "./components/Setting";
+import Navbar from "./presentation/components/header/NavBar";
+import Home from "./presentation/home/Home";
+import Setting from "./presentation/home/Setting";
 
 function App() {
   return (
     <>
-      <NavBar />
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/setting" element={<Setting />} />

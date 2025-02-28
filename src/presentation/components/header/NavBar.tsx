@@ -7,13 +7,13 @@ import {
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { toggleFilters } from "../../config/state/filterSlice";
+import { toggleFilters } from "../../../config/state/filterSlice";
 import Logo from "./Logo";
 
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Setting", href: "/setting" },
-  { name: "Projects", href: "#" },
+  { name: "Detail", href: "/detail" },
   { name: "Calendar", href: "#" },
 ];
 

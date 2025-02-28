@@ -1,8 +1,7 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { MouseEvent, useEffect, useState } from "react";
 import { createSearchParams, useNavigate } from "react-router-dom";
-
-import { callAPI } from "../utils/callApi";
+import { callAPI } from "../../utils/callApi";
 
 interface Suggestion {
   id: number;
