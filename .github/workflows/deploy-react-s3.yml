@@ -28,7 +28,7 @@ jobs:
 
       - name: Debug Secrets
         run: |
-          echo "AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}"
+          echo "AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}"
           echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
 
       # Paso 4: Configurar AWS CLI
