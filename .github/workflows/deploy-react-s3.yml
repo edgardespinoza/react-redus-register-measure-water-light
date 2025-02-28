@@ -27,6 +27,9 @@ jobs:
           npm install
           npm run build
 
+      - name: List build output
+        run: ls -l ./dist/
+
       # Paso 4: Configurar AWS CLI
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v3
@@ -38,4 +41,4 @@ jobs:
       # Paso 5: Desplegar a S3
       - name: Deploy to S3
         run: |
-          aws s3 sync ./build/ s3://react-native-light --delete
+          aws s3 sync ./dist/ s3://react-native-light --delete
