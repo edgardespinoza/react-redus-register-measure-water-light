@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: awss3
 
     steps:
       # Paso 1: Checkout del código
@@ -25,11 +26,6 @@ jobs:
         run: |
           npm install
           npm run build
-
-      - name: Debug Secrets
-        run: |
-          echo "AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}"
-          echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
 
       # Paso 4: Configurar AWS CLI
       - name: Configure AWS CLI
