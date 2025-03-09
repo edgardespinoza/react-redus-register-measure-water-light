@@ -1,23 +1,22 @@
 import {
   AdjustmentsVerticalIcon,
   Bars3Icon,
-  BellIcon,
+  DocumentPlusIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toggleFilters } from "../../../config/state/filterSlice";
 import Logo from "./Logo";
 
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Setting", href: "/setting" },
-  { name: "Detail", href: "/detail" },
-  { name: "Calendar", href: "#" },
 ];
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +24,10 @@ export default function Navbar() {
 
   const toggleMenu = () => {
     setIsOpen((prev) => !prev);
+  };
+
+  const addMeasure = () => {
+    navigate("/measure");
   };
 
   useEffect(() => {
@@ -67,19 +70,26 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-          <div className="flex items-center pr-2">
+          <div className="flex items-center pr-2 space-x-4">
             <button
               type="button"
               onClick={() => dispatch(toggleFilters())}
-              className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white"
+              className="flex items-center space-x-2 rounded-md bg-gray-800 px-3 py-2 text-gray-400 hover:text-white"
             >
               <AdjustmentsVerticalIcon className="size-6" aria-hidden="true" />
+              <span className="hidden sm:inline text-sm font-medium">
+                Filtros
+              </span>
             </button>
             <button
               type="button"
-              className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+              onClick={() => addMeasure()}
+              className="flex items-center space-x-2 rounded-md bg-gray-800 px-3 py-2 text-gray-400 hover:text-white"
             >
-              <BellIcon className="size-6" aria-hidden="true" />
+              <DocumentPlusIcon className="size-6" aria-hidden="true" />
+              <span className="hidden sm:inline text-sm font-medium">
+                Adicionar
+              </span>
             </button>
           </div>
         </div>

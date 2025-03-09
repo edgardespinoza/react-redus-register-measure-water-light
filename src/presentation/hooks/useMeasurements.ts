@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { fetchMeasurements } from "../../infraestructure/api/measure/measurementApi";
-import { LightMeasurement } from "../../model/lightMeasurement";
+import { getPayments } from "../../model/calculateTotalUseCase";
+import { TotalMeasurement } from "../../model/totalMeasurement";
+import useSetting from "./useSetting";
 
-const useMeasurements = (local: string, year: number, month: number) => {
-  const [measurements, setMeasurements] = useState<LightMeasurement[]>([]);
+const useMeasurements = (year: number, month: number) => {
+  const [totalMeasurement, setTotalMeasurement] = useState<TotalMeasurement>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: setting } = useSetting();
 
   useEffect(() => {
-    const getMeasurements = async () => {
+    const getTotalMeasurement = async () => {
       try {
-        const data = await fetchMeasurements(local, year, month);
-        setMeasurements(data);
+        setLoading(true);
+        const data = await getPayments(year, month, setting);
+        setTotalMeasurement(data);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
@@ -22,11 +25,12 @@ const useMeasurements = (local: string, year: number, month: number) => {
         setLoading(false);
       }
     };
+    if (year && month && setting) {
+      getTotalMeasurement();
+    }
+  }, [year, month, setting]);
 
-    getMeasurements();
-  }, [local, year, month]);
-
-  return { measurements, loading, error };
+  return { totalMeasurement, loading, error };
 };
 
 export default useMeasurements;

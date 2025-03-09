@@ -3,7 +3,7 @@ name: Deploy React App to S3
 on:
   push:
     branches:
-      - main # Cambia a la rama que desees usar para el despliegue
+      - main
 
 jobs:
   build-and-deploy:
@@ -11,26 +11,19 @@ jobs:
     environment: awss3
 
     steps:
-      # Paso 1: Checkout del código
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Paso 2: Configurar Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22 # Usa la versión de Node.js que necesites
+          node-version: 22
 
-      # Paso 3: Instalar dependencias y construir la aplicación
       - name: Install dependencies and build
         run: |
           npm install
           npm run build
 
-      - name: List build output
-        run: ls -l ./dist/
-
-      # Paso 4: Configurar AWS CLI
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -38,7 +31,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      # Paso 5: Desplegar a S3
       - name: Deploy to S3
         run: |
           aws s3 sync ./dist/ s3://react-native-light --delete

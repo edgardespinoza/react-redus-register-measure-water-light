@@ -1,5 +1,8 @@
 export interface LightMeasurement {
-  room: string;
+  room: {
+    name: string;
+    id: string;
+  };
   meterWaterCurrent: number;
   meterWaterBefore: number;
   paymentWater: number;
@@ -10,5 +13,4 @@ export interface LightMeasurement {
   year: number;
   month: number;
   rent: number;
-  local: string;
 }

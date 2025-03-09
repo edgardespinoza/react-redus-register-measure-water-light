@@ -1,29 +1,16 @@
 import { LightMeasurement } from "../../../model/lightMeasurement";
-import apiConfig from "../config/apiConfig";
+import apiClient from "../config/apiClient";
 
 export const fetchMeasurements = async (
-  local: string,
   year: number,
   month: number
 ): Promise<LightMeasurement[]> => {
   try {
-    const response = await fetch(
-      `${apiConfig.baseURL}/measure/search?local=${local}&year=${year}&month=${month}`,
-      {
-        method: "GET",
-        headers: {
-          ...apiConfig.headers,
-          // Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // Inyectar token
-        },
-      }
-    );
+    const response = await apiClient.get<LightMeasurement[]>("/readings", {
+      params: { year, month },
+    });
 
-    if (!response.ok) {
-      throw new Error("Error fetching measurements");
-    }
-
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Error fetching measurements:", error);
     throw error;
