@@ -1,29 +1,52 @@
-import { LightMeasurement } from "../model/lightMeasurement"; // Ajusta la ruta según tu estructura
-import { Setting } from "../model/setting"; // Ajusta la ruta según tu estructura
+export interface MeasurementPrice {
+  meterLightCurrent: number | string;
+  meterLightBefore: number | string;
+  meterWaterCurrent: number | string;
+  meterWaterBefore: number | string;
+  rent: number | string;
+  priceLight: number | string;
+  priceWater: number | string;
+}
+export interface PaymentResults {
+  paymentLight: number;
+  paymentWater: number;
+  totalPayment: number;
+}
 
 export const calculatePayment = (
-  measurement: LightMeasurement,
-  setting: Setting
-): LightMeasurement => {
-  const meterLightCurrent = Number(measurement.meterLightCurrent);
-  const meterLightBefore = Number(measurement.meterLightBefore);
-  const meterWaterCurrent = Number(measurement.meterWaterCurrent);
-  const meterWaterBefore = Number(measurement.meterWaterBefore);
-  const priceLight = Number(setting.priceLight);
-  const priceWater = Number(setting.priceWater);
-  const rent = Number(measurement.rent);
+  measurement: MeasurementPrice
+): PaymentResults => {
+  const {
+    meterLightCurrent,
+    meterLightBefore,
+    meterWaterCurrent,
+    meterWaterBefore,
+    rent,
+    priceLight,
+    priceWater,
+  } = measurement;
 
-  // Calcular el pago de luz
-  measurement.paymentLight =
-    (meterLightCurrent - meterLightBefore) * priceLight;
+  const currentLight = safeNumber(meterLightCurrent);
+  const previousLight = safeNumber(meterLightBefore);
+  const currentWater = safeNumber(meterWaterCurrent);
+  const previousWater = safeNumber(meterWaterBefore);
+  const lightPrice = safeNumber(priceLight);
+  const waterPrice = safeNumber(priceWater);
+  const rentAmount = safeNumber(rent);
 
-  // Calcular el pago de agua
-  measurement.paymentWater =
-    (meterWaterCurrent - meterWaterBefore) * priceWater;
+  const paymentLight = (currentLight - previousLight) * lightPrice;
+  const paymentWater = (currentWater - previousWater) * waterPrice;
+  const totalPayment = paymentLight + paymentWater + rentAmount;
 
-  // Calcular el pago total
-  measurement.totalPayment =
-    measurement.paymentLight + measurement.paymentWater + rent;
+  return {
+    paymentLight,
+    paymentWater,
+    totalPayment,
+  };
+};
 
-  return measurement;
+const safeNumber = (value: string | number | undefined | null): number => {
+  if (value === undefined || value === null) return 0;
+  const num = Number(value);
+  return isNaN(num) ? 0 : num;
 };

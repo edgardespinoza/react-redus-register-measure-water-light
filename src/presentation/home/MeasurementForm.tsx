@@ -8,6 +8,8 @@ import { saveMeasure } from "../../model/saveMeasureUseCase";
 import Notification from "../components/Notification";
 import useRooms from "../hooks/useRooms";
 import useSetting from "../hooks/useSetting";
+import { getLastMeasureByRoom } from "../../model/getMeasureLastMonthUseCase";
+import { useEffect } from "react";
 
 const years = [new Date().getFullYear(), new Date().getFullYear() - 1];
 const months = [
@@ -25,7 +27,6 @@ const months = [
   { name: "Diciembre", value: 12 },
 ];
 
-// Interface para los errores
 interface Errors {
   [key: string]: string;
 }
@@ -65,45 +66,86 @@ export default function MeasurementForm() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    const newFormData = {
-      ...formData,
-      [name]: value,
+    const target = e.target as HTMLInputElement; // Type assertion
+    const { name, value, type, inputMode } = target;
+
+    const safeNumber = (val: string): string | number => {
+      if (val === "") return "";
+      if (/^-?\d*\.?\d*$/.test(val)) {
+        const num = Number(val);
+        return isNaN(num) ? "" : num;
+      }
+      return "";
     };
 
-    // Si el setting está disponible, recalcular los pagos
-    if (setting) {
-      const updatedFormData = calculatePayment(newFormData, setting);
-      setFormData(updatedFormData);
+    let parsedValue;
+
+    if (name === "room") {
+      parsedValue = rooms?.find((r) => r.id === value) || {
+        id: value,
+        name: "",
+      };
+    } else if (type === "number" || inputMode === "decimal") {
+      parsedValue = safeNumber(value);
     } else {
-      setFormData(newFormData);
+      parsedValue = value;
     }
+
+    const newFormData = {
+      ...formData,
+      [name]: parsedValue,
+    };
+
+    setFormData(newFormData);
   };
+
+  useEffect(() => {
+    if (setting) {
+      const { paymentLight, paymentWater, totalPayment } = calculatePayment({
+        meterWaterCurrent: formData.meterWaterCurrent,
+        meterLightCurrent: formData.meterLightCurrent,
+        rent: formData.rent,
+        meterLightBefore: formData.meterLightBefore,
+        meterWaterBefore: formData.meterWaterBefore,
+        priceLight: setting.priceLight,
+        priceWater: setting.priceWater,
+      });
+      setFormData((prev) => ({
+        ...prev,
+        paymentLight,
+        paymentWater,
+        totalPayment,
+      }));
+    }
+  }, [
+    formData.meterWaterCurrent,
+    formData.meterLightCurrent,
+    formData.rent,
+    formData.meterLightBefore,
+    formData.meterWaterBefore,
+    setting,
+  ]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const newErrors: Errors = {};
 
-    // Validar campos vacíos y decimales
     formData.forEach((value, key) => {
       if (!value) {
         newErrors[key] = "Este campo es obligatorio.";
       } else if (key.includes("meter") || key === "rent") {
-        // Validar que sea un número decimal
         if (isNaN(parseFloat(value as string))) {
           newErrors[key] = "Por favor, introduce un número válido.";
         }
       }
     });
 
-    // Si hay errores, no enviar el formulario
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    // Si no hay errores, enviar el formulario
     setErrors({});
 
     const formDataObject = Object.fromEntries(formData);
@@ -147,6 +189,30 @@ export default function MeasurementForm() {
       console.error("Error al guardar:", error);
     }
   };
+  const { room, year, month } = formData;
+
+  useEffect(() => {
+    const fetchLastMeasure = async () => {
+      const roomId = room.id;
+      if (!roomId || !year || !month) return;
+
+      try {
+        const lastMeasure = await getLastMeasureByRoom(year, month, roomId);
+        if (lastMeasure) {
+          setFormData((prev) => ({
+            ...prev,
+            meterWaterBefore: lastMeasure.meterWater,
+            meterLightBefore: lastMeasure.meterLight,
+            rent: lastMeasure.rent ?? 0,
+          }));
+        }
+      } catch (error) {
+        console.error("Error get last measure", error);
+      }
+    };
+
+    fetchLastMeasure();
+  }, [room?.id, year, month]);
 
   return (
     <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -333,7 +399,7 @@ export default function MeasurementForm() {
                         </label>
                         <div className="mt-2">
                           <label className="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-900 sm:text-sm/6">
-                            {formData.meterWaterBefore}
+                            {formData.meterWaterBefore ?? "0"}
                           </label>
                         </div>
                       </div>
@@ -399,7 +465,7 @@ export default function MeasurementForm() {
                         </label>
                         <div className="mt-2">
                           <label className="block w-full rounded-md bg-gray-100 px-3 py-1.5 text-base text-gray-900 sm:text-sm/6">
-                            {formData.meterLightBefore}
+                            {formData.meterLightBefore ?? 0}
                           </label>
                         </div>
                       </div>

@@ -1,5 +1,5 @@
-import { fetchMeasurements } from "../infraestructure/api/measure/measurementApi";
-import { fetchSettingApi } from "../infraestructure/setting/settingGetApi";
+import { fetchMeasurements } from "../infrastructure/api/measure/measurementApi";
+import { fetchSettingApi } from "../infrastructure/setting/settingGetApi";
 import { Setting } from "./setting";
 import { TotalMeasurement } from "./totalMeasurement";
 

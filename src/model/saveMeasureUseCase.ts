@@ -1,4 +1,4 @@
-import { saveMeasureApi } from "../infraestructure/api/measure/saveMeasureApi";
+import { saveMeasureApi } from "../infrastructure/api/measure/saveMeasureApi";
 import { LightMeasurement } from "./lightMeasurement";
 
 export const saveMeasure = async (
